@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#05070A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<!-- ANTI-CACHÉ -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<title>Cotizador y Promociones — Cetrogar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+  :root{
+    --bg:#0B0D11;
+    --bg-header:#05070A;
+    --panel:#15181F;
+    --panel-2:#1D212B;
+    --panel-hover:#262B37;
+    --border:#262B36;
+    --border-soft:#1F232D;
+    --ink:#F3F4F6;
+    --ink-soft:#9CA3AF;
+    --ink-dim:#6B7280;
+    --orange:#EF7F13;
+    --orange-hi:#FF9A33;
+    --orange-glow:rgba(239,127,19,.15);
+    --electro:#5EB3E8;
+    --electro-bg:rgba(94,179,232,.12);
+    --pequeno:#5FCB86;
+    --pequeno-bg:rgba(95,203,134,.12);
+    --moto:#F2C14E;
+    --moto-bg:rgba(242,193,78,.14);
+    --green:#25D366;
+    --green-bg:rgba(37,211,102,.12);
+    --danger:#FF5252;
+    --danger-bg:rgba(255,82,82,.12);
+    --purple:#B388FF;
+    --purple-bg:rgba(179,136,255,.15);
+    --radius:12px;
+  }
+  
+  *{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+  }
+  
+  body{
+    margin:0;
+    background:
+      radial-gradient(1000px 450px at 50% -10%, rgba(239,127,19,.07), transparent 70%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:max(20px, env(safe-area-inset-bottom));
+  }
+  
+  .wrap{
+    max-width:1020px;
+    margin:0 auto;
+    padding:0 14px 60px;
+  }
+
+  /* HEADER */
+  header.masthead{
+    background:var(--bg-header);
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+    z-index:100;
+    padding-top:env(safe-area-inset-top);
+  }
+  header.masthead .inner{
+    max-width:1020px;
+    margin:0 auto;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand svg{width:120px; height:auto; display:block;}
+  .brand .divider{width:1px; height:26px; background:var(--border);}
+  .brand h1{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:15px;
+    margin:0;
+    color:var(--ink);
+  }
+  .brand .subtitle{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    color:var(--orange);
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+  
+  .day-badge-live{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 10px;
+    border-radius:20px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    font-weight:600;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--ink-soft);
+  }
+  .day-badge-live b{color:var(--ink);}
+  .pulse-dot{
+    width:7px; height:7px; border-radius:50%; background:var(--pequeno);
+    box-shadow:0 0 0 3px rgba(95,203,134,.2);
+  }
+
+  /* TABS */
+  .tabs-nav{
+    display:flex;
+    gap:8px;
+    margin:14px 0 16px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:8px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .tabs-nav::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    background:transparent;
+    border:1px solid transparent;
+    color:var(--ink-soft);
+    font-family:'Manrope',sans-serif;
+    font-size:13px;
+    font-weight:700;
+    padding:8px 14px;
+    border-radius:30px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+    min-height:38px;
+  }
+  .tab-btn.active{
+    background:var(--orange-glow);
+    color:var(--orange-hi);
+    border-color:rgba(239,127,19,.35);
+  }
+
+  .tab-content{display:none;}
+  .tab-content.active{display:block;}
+
+  /* CARDS */
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,.3);
+  }
+  @media(min-width:600px){.card{padding:22px;}}
+
+  /* SIMULADOR JUEVES */
+  .sim-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:rgba(239,127,19,.08);
+    border:1px solid rgba(239,127,19,.25);
+    padding:8px 12px;
+    border-radius:8px;
+    margin-bottom:14px;
+    font-size:12px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .sim-bar b{color:var(--orange-hi);}
+  .btn-sim{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--ink);
+    padding:6px 12px;
+    border-radius:6px;
+    font-size:11px;
+    font-family:'IBM Plex Mono',monospace;
+    cursor:pointer;
+    font-weight:600;
+    min-height:32px;
+  }
+  .btn-sim.active{
+    background:var(--orange);
+    color:#100b04;
+    border-color:var(--orange);
+  }
+
+  /* INPUTS */
+  .calc-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  @media(min-width:768px){
+    .calc-grid{grid-template-columns:1.2fr 1fr 1.4fr;}
+  }
+
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .field input, .field select{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:var(--panel-2);
+    font-family:'Inter',sans-serif;
+    font-size:16px;
+    color:var(--ink);
+    min-height:44px;
+  }
+  .field select{
+    appearance:none;
+    -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%239CA3AF'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+    padding-right:36px;
+  }
+  .field input:focus, .field select:focus{
+    outline:none;
+    border-color:var(--orange);
+    box-shadow:0 0 0 3px var(--orange-glow);
+  }
+
+  .autocomplete{position:relative;}
+  .ac-list{
+    position:absolute;
+    z-index:60;
+    top:calc(100% + 4px);left:0;right:0;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    max-height:220px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    display:none;
+    box-shadow:0 12px 35px rgba(0,0,0,.7);
+  }
+  .ac-list.show{display:block;}
+  .ac-item{
+    padding:12px 14px;
+    font-size:14px;
+    cursor:pointer;
+    border-bottom:1px solid var(--border-soft);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    min-height:44px;
+  }
+  .ac-item:active{background:rgba(239,127,19,.18);}
+  .ac-item span:first-child{color:var(--orange-hi); font-weight:700;}
+
+  /* READOUT BADGES */
+  .readout-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    background:var(--panel-2);
+    padding:10px 12px;
+    border-radius:8px;
+    margin-bottom:12px;
+    border:1px solid var(--border-soft);
+    flex-wrap:wrap;
+  }
+  .badge{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:11px;
+    text-transform:uppercase;
+    padding:4px 9px;
+    border-radius:20px;
+  }
+  .badge.Electro{background:var(--electro-bg); color:var(--electro);}
+  .badge.Pequeño{background:var(--pequeno-bg); color:var(--pequeno);}
+  .badge.Motos{background:var(--moto-bg); color:var(--moto);}
+  .badge.na{background:rgba(255,255,255,.07); color:var(--ink-soft);}
+  .badge.zero{background:var(--green-bg); color:var(--green); border:1px solid rgba(37,211,102,.3);}
+
+  /* DESCUENTOS CONTADO SUGERENCIA */
+  .contado-box{
+    background:rgba(95,203,134,.08);
+    border:1px dashed rgba(95,203,134,.4);
+    border-radius:8px;
+    padding:10px 12px;
+    margin-bottom:14px;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .contado-box b{color:var(--pequeno);}
+
+  /* GRILLA DE PLANES */
+  .plans-section-title{
+    font-family:'Manrope',sans-serif;
+    font-size:13.5px;
+    font-weight:800;
+    color:var(--ink);
+    margin:16px 0 10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .plans-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  @media(min-width:640px){.plans-grid{grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:10px;}}
+  @media(max-width:360px){.plans-grid{grid-template-columns:1fr;}}
+
+  .plan-card{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px;
+    cursor:pointer;
+    position:relative;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  @media(hover: hover){
+    .plan-card:hover{
+      background:var(--panel-hover);
+      border-color:rgba(239,127,19,.4);
+      transform:translateY(-2px);
+    }
+  }
+  .plan-card:active{
+    background:var(--panel-hover);
+    transform:scale(0.98);
+  }
+  .plan-card.selected{
+    background:rgba(239,127,19,.08);
+    border-color:var(--orange);
+    box-shadow:0 0 0 2px var(--orange-glow);
+  }
+  .plan-card.is-zero{
+    border-color:rgba(37,211,102,.35);
+  }
+  .plan-card.is-zero::after{
+    content:'0% SIN RECARGO';
+    position:absolute;
+    top:-6px;
+    right:8px;
+    background:var(--green);
+    color:#05140A;
+    font-size:8.5px;
+    font-weight:800;
+    font-family:'IBM Plex Mono',monospace;
+    padding:1px 5px;
+    border-radius:5px;
+  }
+
+  .plan-card.is-blocked{
+    background:#161214;
+    border-color:rgba(255,82,82,.3);
+    opacity:0.85;
+  }
+  .plan-card.is-blocked::after{
+    content:'🔒 NO DISPONIBLE';
+    position:absolute;
+    top:-6px;
+    right:8px;
+    background:var(--danger);
+    color:#FFF;
+    font-size:8.5px;
+    font-weight:800;
+    font-family:'IBM Plex Mono',monospace;
+    padding:1px 5px;
+    border-radius:5px;
+  }
+
+  .plan-cuotas{
+    font-family:'Manrope',sans-serif;
+    font-size:16px;
+    font-weight:800;
+    color:var(--ink);
+  }
+  .plan-val-cuota{
+    font-family:'Manrope',sans-serif;
+    font-size:14.5px;
+    font-weight:800;
+    color:var(--pequeno);
+    margin:2px 0;
+  }
+  .plan-card.is-blocked .plan-val-cuota{
+    color:var(--danger);
+    font-size:12.5px;
+  }
+  .plan-bank-name{
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .plan-total-txt{
+    font-size:10px;
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--ink-dim);
+  }
+
+  /* BARRA DE COTIZACIÓN Y BOTONES */
+  .quote-summary{
+    background:linear-gradient(180deg, var(--panel-2) 0%, #12151B 100%);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    margin-top:16px;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+    align-items:center;
+  }
+  @media(min-width:680px){.quote-summary{grid-template-columns:1fr auto;}}
+
+  .btn-wa{
+    background:#25D366;
+    color:#061D0F;
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:14px;
+    padding:12px 18px;
+    border-radius:8px;
+    border:none;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-decoration:none;
+    min-height:46px;
+  }
+  .btn-wa:active{background:#20ba5a; transform:scale(0.98);}
+  .btn-copy{
+    background:rgba(255,255,255,.08);
+    color:var(--ink);
+    border:1px solid var(--border);
+    font-family:'Manrope',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    padding:12px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    min-height:46px;
+  }
+  .btn-copy:active{background:rgba(255,255,255,.14); transform:scale(0.98);}
+
+  /* TABLAS PROMO */
+  .promo-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+    margin-top:8px;
+  }
+  .promo-table th, .promo-table td{
+    border:1px solid var(--border);
+    padding:9px 10px;
+    text-align:left;
+  }
+  .promo-table th{
+    background:var(--panel-2);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  .pill-csi{
+    background:var(--green-bg);
+    color:var(--green);
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:10.5px;
+    padding:2px 7px;
+    border-radius:10px;
+  }
+  .pill-recargo{
+    background:rgba(255,255,255,.06);
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    padding:2px 7px;
+    border-radius:10px;
+  }
+  .pill-alert{
+    background:var(--danger-bg);
+    color:var(--danger);
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:10.5px;
+    padding:2px 7px;
+    border-radius:10px;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:max(20px, env(safe-area-inset-bottom));
+    left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:#1F232D;
+    color:#FFF;
+    border:1px solid var(--green);
+    padding:12px 20px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:700;
+    box-shadow:0 10px 30px rgba(0,0,0,.7);
+    opacity:0;
+    transition:all .25s ease;
+    z-index:999;
+    pointer-events:none;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0); opacity:1;}
+
+  .footnote{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--ink-dim);
+    text-align:center;
+    margin-top:28px;
+  }
+</style>
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="inner">
+      <div class="brand">
+        <svg viewBox="0 0 200 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M27.5 36.1L5.9 31.8C3.1 31.2 1.1 29.3.3 26.5L5 5.8C5.8 2.7 8.5.6 11.6.6h1.5l14.8 8C30.6 10 32.7 13 33 16.2l.5 12.2c.1 4.3-3 7.7-6 7.7z" fill="#EF7F13"/>
+          <path d="M58.4 18.7c0-2.5-.9-4.8-3.8-4.8-3.6 0-4 4.8-4 7.5s.4 7 4.3 7c2.4 0 3.6-2 3.9-4.2l5.1.3c-.6 5.1-4.1 8.1-9.2 8.1-6.6 0-9.8-5.4-9.8-11.4s3.3-11.4 10-11.4c5.6 0 8.4 3.2 9 8.6l-5.5.3zM70.5 14.4V18.9h8.4v4.2h-8.4V28h10.7v4.3H65.3V10.1h15.9v4.3H70.5zM99 14.5h-5.6v17.9h-5.3V14.5h-5.6V10.1H99v4.4zM105.5 32.4h-5.2V10.1h9.4c3.8 0 8.5 1.1 8.5 6.7 0 3.7-2.6 5.8-5.8 6.4l4.1 9.2h-5.8l-3.4-8.8h-1.8v8.8zm0-12.6h2.9c2.3 0 4.4-.3 4.4-3s-2.1-2.7-4.4-2.7h-2.9v5.7zM122 29.2c-1.6-2.4-2.3-5.2-2.3-8s3-11.4 9.5-11.4c4.3 0 7 2.3 7.8 4.6 1.6 2.4 2.4 5.2 2.4 8s-.7 5.4-2.1 7.7c-1.6 2.4-4.5 3.8-8.1 3.8-3.4 0-5.7-1.3-7.2-4.7zm3.9-12.6c-.5 1.5-.7 3.1-.7 4.6 0 2.8.4 7.2 4.1 7.2s4.1-4.4 4-7.2c0-1.5-.2-3.1-.8-4.6-.6-1.4-1.7-2.5-3.3-2.5s-2.7 1.1-3.3 2.5zM149.3 24.6V20.4h9.2v12h-2.4l-.8-2.6c-1.4 2-3.7 2.9-6 2.9-6.5 0-9.2-5.4-9.2-11.2s3-11.6 9.7-11.6c4.8 0 8 2.9 8.7 7.6l-4.9.7c-.2-2.2-1.4-4.1-3.9-4.1-3.7 0-4.2 4.8-4.2 7.5s.8 7 4.4 7c1.7 0 3.5-.9 4.1-2.5h-4.7zM179.9 32.4h-5.6l-1.4-4.6h-7.2l-1.4 4.6h-4.6l7.1-22.3h6l7.1 22.3zm-8.2-8.7l-2.4-7.8-2.4 7.8h4.8zM186.4 32.4h-5.2V10.1h9.4c3.8 0 8.5 1.1 8.5 6.7 0 3.7-2.6 5.8-5.8 6.4l4.1 9.2h-5.8l-3.4-8.8h-1.8v8.8zm0-12.6h2.9c2.3 0 4.4-.3 4.4-3s-2.1-2.7-4.4-2.7h-2.9v5.7z" fill="white"/>
+        </svg>
+        <div class="divider"></div>
+        <div>
+          <h1>Cetrogar Cotizador</h1>
+          <div class="subtitle">Condiciones vigentes — Octubre 2026</div>
+        </div>
+      </div>
+      <div class="day-badge-live">
+        <span class="pulse-dot"></span>
+        Hoy: <b id="header-today-txt">Viernes 02/10</b>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <!-- NAVEGACIÓN TABS -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="openTab('tab-calc')">🧮 Cotizador de Cuotas</button>
+      <button class="tab-btn" onclick="openTab('tab-promos')">📢 Promociones Vigentes</button>
+      <button class="tab-btn" onclick="openTab('tab-search')">🔍 Catálogo Mailing</button>
+    </div>
+
+    <!-- PESTAÑA 1: COTIZADOR -->
+    <div id="tab-calc" class="tab-content active">
+      <div class="card">
+        
+        <div class="sim-bar">
+          <div>
+            Validación de Fecha: <b id="sim-status-label">Día real detectado</b>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-sim active" id="btn-day-real" onclick="setSimDay(null)">Día Real</button>
+            <button class="btn-sim" id="btn-day-thu" onclick="setSimDay(4)">⚡ Simular Jueves</button>
+          </div>
+        </div>
+
+        <div id="ofertas-uploader-box" style="background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div style="font-size:12px; color:var(--ink-soft); line-height:1.5;">
+              <b style="color:var(--ink);">📊 Listado de OFERTAS (intranet)</b><br>
+              <span id="ofertas-status">Sin archivo cargado en esta sesión.</span>
+            </div>
+            <label for="in-ofertas-file" style="background:var(--orange); color:#100b04; padding:8px 14px; border-radius:6px; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap; min-height:32px; display:inline-flex; align-items:center;">
+              📎 Adjuntar Ofertas.xlsx
+            </label>
+            <input type="file" id="in-ofertas-file" accept=".xlsx,.xls" style="display:none;">
+          </div>
+        </div>
+
+        <div id="novedades-live-alert" style="margin-bottom:14px;"></div>
+
+        <div class="calc-grid">
+          <div class="field autocomplete">
+            <label for="in-codigo">1. Código SKU</label>
+            <input type="text" id="in-codigo" placeholder="Ej: ED6504, TV3360, MO0851..." autocomplete="off" autocapitalize="characters">
+            <div class="ac-list" id="ac-list"></div>
+          </div>
+
+          <div class="field">
+            <label for="in-precio">2. Precio Contado ($)</label>
+            <input type="number" id="in-precio" placeholder="100000" inputmode="decimal" min="0" step="0.01">
+          </div>
+
+          <div class="field">
+            <label for="in-banco-filter">3. Filtrar por Tarjeta / Banco</label>
+            <select id="in-banco-filter" onchange="renderAuthorizedPlans()">
+              <option value="ALL">⭐ Todos los bancos autorizados</option>
+              <option value="Resto">Resto de Bancos</option>
+              <option value="Naranja">Tarjeta Naranja</option>
+              <option value="Sol">Tarjeta Sol</option>
+              <option value="Galicia">Banco Galicia (Visa y Mastercard hasta 12 CSI)</option>
+              <option value="GaliciaMastercard">Banco Galicia Mastercard (15 y 18 CSI — solo Octubre)</option>
+              <option value="Santander">Banco Santander</option>
+              <option value="Nacion">Banco Nación</option>
+              <option value="Frances">BBVA Francés</option>
+              <option value="Macro">Banco Macro</option>
+              <option value="Tuya">Tarjeta Tuya</option>
+              <option value="AMEX">American Express</option>
+              <option value="Hipotecario">Banco Hipotecario (12 CSI solo jueves)</option>
+              <option value="Cabal">Cabal</option>
+              <option value="NoBancarizada">No Bancarizadas</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="readout-bar" id="readout-bar">
+          <div id="readout-status">
+            <span class="badge na">Sin artículo</span> Ingresá un código para ver cuotas autorizadas
+          </div>
+          <div id="readout-count" style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft);"></div>
+        </div>
+
+        <div id="contado-discount-box" class="contado-box" style="display:none;">
+          <div id="contado-discount-txt"></div>
+        </div>
+
+        <div class="plans-section-title">
+          <span>Opciones de Cuotas Autorizadas</span>
+          <span style="font-size:11px; color:var(--ink-dim); font-weight:500;">Tocá una cuota para cotizar</span>
+        </div>
+
+        <div class="plans-grid" id="plans-grid">
+          <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--ink-dim); font-family:'IBM Plex Mono',monospace; font-size:12.5px;">
+            Ingresá un SKU arriba para cargar las cuotas habilitadas.
+          </div>
+        </div>
+
+        <div id="quote-summary" class="quote-summary" style="display:none;">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; color:var(--ink-soft);" id="quote-bank-title">Plan Seleccionado</div>
+            <div style="font-family:'Manrope',sans-serif; font-size:28px; font-weight:800; color:var(--pequeno);" id="quote-cuota-val">$0,00</div>
+            <div style="font-size:12.5px; color:var(--ink-soft); line-height:1.6;" id="quote-detail-txt"></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <button class="btn-wa" id="btn-wa">💬 Enviar a WhatsApp</button>
+            <button class="btn-copy" id="btn-copy">📋 Copiar cotización</button>
+          </div>
+        </div>
+
+        <div id="match-price-box" style="display:none; margin-top:12px; background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px;">🌐 Igualar precio de contado (autorización web)</div>
+          <div id="match-price-txt" style="font-size:12.5px; color:var(--ink-soft); line-height:1.8;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 2: PROMOS -->
+    <div id="tab-promos" class="tab-content">
+      <div class="card">
+        <h2 style="font-family:'Manrope',sans-serif; font-size:16px; margin:0 0 6px; color:var(--orange-hi);">
+          Acuerdos Comerciales y Promociones Vigentes
+        </h2>
+        <p style="color:var(--ink-soft); font-size:12.5px; margin:0 0 16px;">
+          Condiciones comerciales vigentes desde el 02/10/2026 (documento oficial "Condiciones Comerciales Octubre 2026"). Sin promociones puntuales activas por el momento — rigen las condiciones base de este documento.
+        </p>
+
+        <div id="hipo-live-alert" style="background:rgba(255,82,82,.12); border:1px solid rgba(255,82,82,.35); border-radius:8px; padding:12px; margin-bottom:16px; font-size:12.5px; color:#FFA8A8;"></div>
+
+        <div style="background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:16px; font-size:12px; color:var(--ink-soft); line-height:1.5;">
+          <b style="color:var(--ink);">📊 Listado de OFERTAS (intranet):</b> <span id="ofertas-status-promos">Sin archivo cargado en esta sesión.</span>
+          <span style="color:var(--ink-dim);">(se carga desde la pestaña Cotizador)</span>
+        </div>
+
+        <!-- CONDICIONES BASE OFICIALES (documento "Condiciones Comerciales Octubre 2026", vigencia 02/10) -->
+        <h3 style="font-family:'Manrope',sans-serif; font-size:14px; margin:0 0 10px; color:var(--ink); display:flex; align-items:center; gap:8px;">
+          📋 Condiciones Base — Octubre 2026 <span class="pill-csi" style="font-size:10px;">DOCUMENTO OFICIAL, Gerente</span>
+        </h3>
+        <div style="display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:16px;">
+
+          <div style="background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+            <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:13.5px; color:var(--ink); margin-bottom:6px;">💵 Descuentos base Electro/Celulares/Muebles (Efectivo/Débito, nivel Gerente)</div>
+            <div style="font-size:12.5px; color:var(--ink-soft); line-height:1.7;">
+              <span class="pill-csi">12%</span> <b>Productos en Oferta</b> (todos)<br>
+              <span class="pill-csi">20%</span> <b>Climatización</b> No Publicado &nbsp; <span class="pill-csi">17%</span> <b>Electro</b> No Publicado &nbsp; <span class="pill-csi">17%</span> <b>Celulares</b> No Publicado &nbsp; <span class="pill-csi">20%</span> <b>Muebles/Colchones/Línea Negra</b> No Publicado<br>
+              <span class="pill-csi">10%</span> <b>Tarjeta de crédito en 1 pago</b>, solo No Publicados (los Publicados NO tienen descuento en 1 pago con TC)<br>
+              <span class="pill-alert">⚠️ Excepción: Aires superiores a 8000 Watts → 7%</span><br>
+              <span style="color:var(--ink-dim);">El cotizador aplica automáticamente el 20% de Climatización cuando el SKU se detecta como Aire/Ventilador y el 12% en Oferta; Celulares, Muebles y Línea Negra no se detectan por SKU y deben aplicarse manualmente.</span>
+            </div>
+          </div>
+
+          <div style="background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+            <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:13px; color:var(--ink); margin-bottom:6px;">🏍️ Descuentos base Motos (Efectivo/Débito/1 pago/Transferencia/QR, nivel Gerente)</div>
+            <div style="font-size:12px; color:var(--ink-soft); line-height:1.7;">
+              <span class="pill-csi">15%</span> Multimarca, Honda-Yamaha y Bajaj &nbsp; <span class="pill-csi">22%</span> Kymco &nbsp; <span class="pill-csi">15%</span> Accesorios<br>
+              <span class="pill-csi">12%</span> Modelos de más de 310cc no publicados<br>
+              <span class="pill-alert">⚠️ Motos publicadas: NO se realizan descuentos</span>
+            </div>
+          </div>
+
+          <div style="background:var(--panel-2); border:1px solid rgba(94,179,232,.3); border-radius:10px; padding:12px 14px;">
+            <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:13px; color:var(--electro); margin-bottom:6px;">💳 Banco Galicia Mastercard — 15 y 18 CSI (novedad de Octubre)</div>
+            <div style="font-size:12px; color:var(--ink-soft); line-height:1.6;">
+              Durante Octubre, la tarjeta <b>Mastercard del Banco Galicia</b> (no Visa) habilita además <b>15 y 18 cuotas</b>, con recargo propio — seleccionar <b>"Banco Galicia Mastercard"</b> en el filtro de bancos para cotizarlas. Galicia Visa sigue con su tope habitual de 12 cuotas.
+            </div>
+          </div>
+
+          <div style="background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+            <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:13px; color:var(--ink); margin-bottom:6px;">🌐 Igualaciones de precio web</div>
+            <div style="font-size:12px; color:var(--ink-soft); line-height:1.6;">
+              Se puede igualar el precio de la web siempre que sea a <b>cuotas sin interés</b> y el descuento necesario no supere el <b>20%</b>. Hay que pedir autorización en intranet. Usá la calculadora <b>"Igualar precio de contado"</b> en la pestaña Cotizador — aparece sola al elegir un plan con recargo.
+            </div>
+          </div>
+
+        </div>
+
+        <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+          <table class="promo-table">
+            <thead>
+              <tr>
+                <th>Banco / Tarjeta</th>
+                <th>Cuotas disponibles</th>
+                <th>Hasta sin interés (fuera de mailing)</th>
+                <th>Hasta sin interés (mailing Electro)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Resto de los Bancos</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12, 15, 18 CSI</span></td>
+                <td>12 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>Banco Nación</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12, 15, 18, 20 CSI</span></td>
+                <td>9 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>BBVA Francés</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12 CSI</span></td>
+                <td>12 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>Banco Macro</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12 CSI</span></td>
+                <td>12 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>American Express</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12 CSI</span></td>
+                <td>9 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>Banco Hipotecario</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12 CSI</span></td>
+                <td>12 cuotas</td>
+                <td>9 cuotas <span style="color:var(--ink-dim);">(12 solo jueves, con recargo)</span></td>
+              </tr>
+              <tr>
+                <td><b>Banco Galicia</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12 CSI</span></td>
+                <td>12 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr style="background:rgba(94,179,232,.06);">
+                <td><b>Galicia Mastercard</b></td>
+                <td><span class="pill-csi">15, 18 CSI</span></td>
+                <td colspan="2">Con recargo propio — ver tarjeta de arriba. Novedad de Octubre.</td>
+              </tr>
+              <tr>
+                <td><b>Santander Río</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12 CSI</span></td>
+                <td>9 cuotas</td>
+                <td>6 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>Tarjeta Tuya</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12, 18 CSI</span></td>
+                <td>9 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>Tarjeta Sol</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12, 14 CSI</span></td>
+                <td>9 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>Tarjeta Naranja</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12 CSI</span></td>
+                <td>12 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>Cabal</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12, 15, 18 CSI</span></td>
+                <td>9 cuotas</td>
+                <td>9 cuotas</td>
+              </tr>
+              <tr>
+                <td><b>No Bancarizadas</b></td>
+                <td><span class="pill-csi">3, 6, 9, 12 CSI</span></td>
+                <td colspan="2">Siempre con recargo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="color:var(--ink-dim); font-size:10.5px; margin-top:6px;">
+          "Fuera de mailing" = productos que no están en el listado de Mailing de Octubre. "Mailing Electro" = productos que sí están, familia Electro. Para Pequeño y Motos, o el valor exacto de cada cuota, usar el cotizador.
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 3: BUSCADOR -->
+    <div id="tab-search" class="tab-content">
+      <div class="card">
+        <h2 style="font-family:'Manrope',sans-serif; font-size:15px; margin:0 0 10px;">Catálogo Completo Mailing Octubre</h2>
+        <div class="field" style="margin-bottom:12px;">
+          <input type="text" id="cat-search" placeholder="Filtrar por SKU (ej: ED6504, TV3360)...">
+        </div>
+        <div style="max-height:360px; overflow-y:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--border); border-radius:8px;">
+          <table class="promo-table" style="margin:0;">
+            <thead>
+              <tr>
+                <th style="width:130px;">SKU</th>
+                <th>Familia Asignada</th>
+                <th>Estado Mailing</th>
+              </tr>
+            </thead>
+            <tbody id="cat-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="footnote">Cetrogar · Cotizador Comercial Preventa (Optimizado para iOS y Android)</div>
+  </div>
+
+  <div class="toast" id="toast">¡Cotización copiada al portapapeles!</div>
+
+<script>
+// BASE DE PRODUCTOS
+const PRODUCTOS_DATA = [
+  ["TV3325","Electro"],["TE3346","Electro"],["TE3347","Electro"],["TE3348","Electro"],
+  ["AA3618","Electro"],["ED6678","Electro"],["AU3484","Electro"],["AU3564","Electro"],
+  ["AU3465","Peque\u00f1o"],["AU3419","Electro"],["AU3241","Electro"],["AU3287","Electro"],
+  ["AU3456","Peque\u00f1o"],["AU3475","Peque\u00f1o"],["AU3528","Electro"],["AU3568","Peque\u00f1o"],
+  ["AU3569","Peque\u00f1o"],["AU3539","Peque\u00f1o"],["AU3540","Peque\u00f1o"],["AU3493","Peque\u00f1o"],
+  ["TE3451","Electro"],["TE3450","Electro"],["TE3449","Electro"],["TE3508","Electro"],
+  ["TE3509","Electro"],["TE3507","Electro"],["TE3531","Electro"],["TE3532","Electro"],
+  ["TE3474","Electro"],["TE3476","Electro"],["TE3367","Electro"],["TE3540","Electro"],
+  ["AC6242","Peque\u00f1o"],["AC5179","Peque\u00f1o"],["AC6002","Peque\u00f1o"],["AC6237","Peque\u00f1o"],
+  ["TE3556","Electro"],["TE3557","Electro"],["TE3558","Electro"],["CM4864","Electro"],
+  ["CM4537","Electro"],["CM4882","Electro"],["CM4800","Electro"],["CM4899","Electro"],
+  ["CM4806","Electro"],["CM4874","Electro"],["CM4845","Electro"],["FT2991","Peque\u00f1o"],
+  ["EL3034","Electro"],["EL2954","Peque\u00f1o"],["EL2961","Peque\u00f1o"],["EL3039","Peque\u00f1o"],
+  ["CM4869","Electro"],["AC5809","Peque\u00f1o"],["MU3607","Peque\u00f1o"],["TV3197","Electro"],
+  ["TV3164","Electro"],["TV3261","Electro"],["TV3283","Electro"],["TV3236","Electro"],
+  ["TV3284","Electro"],["TV3221","Electro"],["TV3222","Electro"],["TV3224","Electro"],
+  ["AA3587","Electro"],["AA3591","Electro"],["AA3608","Electro"],["AA3612","Electro"],
+  ["AA3616","Electro"],["AA3597","Electro"],["AA3578","Electro"],["AA3575","Electro"],
+  ["VL2105","Electro"],["VL2179","Electro"],["VL2166","Electro"],["VL2131","Peque\u00f1o"],
+  ["VL2104","Peque\u00f1o"],["VL2138","Peque\u00f1o"],["VL2072","Electro"],["VL2183","Electro"],
+  ["VL2182","Electro"],["LB4000","Electro"],["LB3928","Electro"],["LB4021","Electro"],
+  ["LB4179","Electro"],["LB3935","Electro"],["LB4150","Electro"],["LB4093","Electro"],
+  ["LB4198","Electro"],["LB3267","Electro"],["LB3890","Electro"],["LB4146","Electro"],
+  ["LB3891","Electro"],["AA2353","Electro"],["AA3610","Electro"],["VL2191","Electro"],
+  ["LB4145","Electro"],["LB4217","Electro"],["LB4123","Electro"],["LB4088","Electro"],
+  ["LB4039","Electro"],["ED6005","Peque\u00f1o"],["TV3360","Electro"],["AU3468","Peque\u00f1o"],
+  ["AU3449","Peque\u00f1o"],["AU3448","Peque\u00f1o"],["TE3551","Electro"],["TE3542","Electro"],
+  ["CM4894","Electro"],["ED6677","Peque\u00f1o"],["ED6492","Peque\u00f1o"],["RO2067","Electro"],
+  ["RO2138","Electro"],["ED6598","Peque\u00f1o"],["ED6089","Peque\u00f1o"],["ED4339","Peque\u00f1o"],
+  ["LB3210","Electro"],["LB3211","Electro"],["LB4166","Electro"],["LB3823","Electro"],
+  ["LB3921","Electro"],["LB3922","Electro"],["LB4158","Electro"],["LB3542","Electro"],
+  ["LB3133","Electro"],["LB4168","Electro"],["ED4640","Peque\u00f1o"],["ED4531","Peque\u00f1o"],
+  ["ED6550","Peque\u00f1o"],["ED6612","Peque\u00f1o"],["ED3500","Peque\u00f1o"],["ED3657","Peque\u00f1o"],
+  ["ED6602","Peque\u00f1o"],["LB4065","Electro"],["LB4155","Electro"],["LB4056","Electro"],
+  ["LB3581","Electro"],["LB4057","Electro"],["LB3989","Electro"],["LB4218","Electro"],
+  ["LB4082","Electro"],["LB4189","Electro"],["LB4203","Electro"],["LB3041","Electro"],
+  ["LB3021","Electro"],["ED3993","Peque\u00f1o"],["ED3709","Peque\u00f1o"],["ED6265","Peque\u00f1o"],
+  ["ED6668","Peque\u00f1o"],["ED6659","Peque\u00f1o"],["ED6676","Peque\u00f1o"],["ED3752","Peque\u00f1o"],
+  ["ED4377","Peque\u00f1o"],["ED6679","Peque\u00f1o"],["ED6669","Peque\u00f1o"],["ED6537","Peque\u00f1o"],
+  ["ED6392","Peque\u00f1o"],["ED4000","Peque\u00f1o"],["ED6387","Peque\u00f1o"],["MC1944","Peque\u00f1o"],
+  ["MC1945","Peque\u00f1o"],["ED6442","Peque\u00f1o"],["ED4264","Peque\u00f1o"],["ED4263","Peque\u00f1o"],
+  ["ED6373","Peque\u00f1o"],["ED4300","Peque\u00f1o"],["ED4035","Peque\u00f1o"],["ED6606","Peque\u00f1o"],
+  ["ED6171","Peque\u00f1o"],["ED6172","Peque\u00f1o"],["ED6168","Peque\u00f1o"],["ED6507","Peque\u00f1o"],
+  ["ED6405","Peque\u00f1o"],["ED3771","Peque\u00f1o"],["ED6428","Peque\u00f1o"],["ED6222","Electro"],
+  ["ED4439","Electro"],["ED6644","Electro"],["ED6197","Electro"],["ED6643","Electro"],
+  ["CH2201","Electro"],["CH1986","Electro"],["CH2126","Electro"],["CH2173","Electro"],
+  ["MU3587","Electro"],["MU3551","Electro"],["MU3074","Electro"],["MU3390","Electro"],
+  ["MU3426","Electro"],["MU3073","Electro"],["MU3427","Electro"],["RO2120","Electro"],
+  ["RO2121","Electro"],["RO2122","Electro"],["RO2354","Electro"],["RO2367","Electro"],
+  ["RO2355","Electro"],["RO2368","Electro"],["RO2359","Electro"],["RO2358","Electro"],
+  ["RO2360","Electro"],["MO0366","Motos"],["MO0691","Motos"],["MO0920","Motos"],
+  ["MO0941","Motos"],["MO0918","Motos"],["MO0919","Motos"],["MO0801","Motos"],
+  ["MO0442","Motos"],["MO0847","Motos"],["MO0846","Motos"],["MO0902","Motos"],
+  ["HE1781","Electro"],["HE1602","Peque\u00f1o"],["HE1638","Peque\u00f1o"],["HE1629","Electro"],
+  ["CJ2801","Electro"],["CJ3199","Electro"],["CJ3207","Electro"],["CJ3177","Electro"],
+  ["AA3579","Electro"],["LB4058","Electro"],["LB4080","Electro"],["RO2201","Electro"],
+  ["RO2204","Electro"],["MO0626","Motos"],
+];
+
+// MATRIZ COMPLETA DE RECARGOS Y BANCOS
+const RECARGOS_DATA = [
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Electro 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Electro 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Electro 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Electro 12", no_esta: 0, cuotas: 12, electro: 0.03, pequeno: 0.03, motos: "No Tiene" },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Electro 15", no_esta: 0.05, cuotas: 15, electro: 0.05, pequeno: 0.05, motos: "No Tiene" },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Electro 18", no_esta: 0.07, cuotas: 18, electro: 0.07, pequeno: 0.07, motos: "No Tiene" },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Motos 12", no_esta: 0, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.05 },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Motos 15", no_esta: 0.05, cuotas: 15, electro: "No Tiene", pequeno: "No Tiene", motos: 0.07 },
+  { banco: "Resto", termino: "Tarjeta de crédito - Resto Bancos Motos 18", no_esta: 0.09, cuotas: 18, electro: "No Tiene", pequeno: "No Tiene", motos: 0.09 },
+  { banco: "Galicia", termino: "Tarjeta de crédito - Galicia Electro 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Galicia", termino: "Tarjeta de crédito - Galicia Electro 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Galicia", termino: "Tarjeta de crédito - Galicia Electro 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Galicia", termino: "Tarjeta de crédito - Galicia Electro 12", no_esta: 0, cuotas: 12, electro: 0.03, pequeno: 0.03, motos: "No Tiene" },
+  { banco: "GaliciaMastercard", termino: "Tarjeta de crédito - Galicia Mastercard Electro 15", no_esta: 0.03, cuotas: 15, electro: 0.05, pequeno: 0.05, motos: "No Tiene" },
+  { banco: "GaliciaMastercard", termino: "Tarjeta de crédito - Galicia Mastercard Electro 18", no_esta: 0.05, cuotas: 18, electro: 0.07, pequeno: 0.07, motos: "No Tiene" },
+  { banco: "Galicia", termino: "Tarjeta de crédito - Galicia Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Galicia", termino: "Tarjeta de crédito - Galicia Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Galicia", termino: "Tarjeta de crédito - Galicia Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Galicia", termino: "Tarjeta de crédito - Galicia Motos 12", no_esta: 0, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.05 },
+  { banco: "GaliciaMastercard", termino: "Tarjeta de crédito - Galicia Mastercard Motos 15", no_esta: 0.05, cuotas: 15, electro: "No Tiene", pequeno: "No Tiene", motos: 0.07 },
+  { banco: "GaliciaMastercard", termino: "Tarjeta de crédito - Galicia Mastercard Motos 18", no_esta: 0.07, cuotas: 18, electro: "No Tiene", pequeno: "No Tiene", motos: 0.09 },
+  { banco: "Santander", termino: "Tarjeta de crédito - Santander Electro 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Santander", termino: "Tarjeta de crédito - Santander Electro 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Santander", termino: "Tarjeta de crédito - Santander Electro 9", no_esta: 0, cuotas: 9, electro: 0.03, pequeno: 0.03, motos: "No Tiene" },
+  { banco: "Santander", termino: "Tarjeta de crédito - Santander Electro 12", no_esta: 0.05, cuotas: 12, electro: 0.07, pequeno: 0.07, motos: "No Tiene" },
+  { banco: "Santander", termino: "Tarjeta de crédito - Santander Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Santander", termino: "Tarjeta de crédito - Santander Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Santander", termino: "Tarjeta de crédito - Santander Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0.05 },
+  { banco: "Santander", termino: "Tarjeta de crédito - Santander Motos 12", no_esta: 0.07, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.09 },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Electro 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Electro 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Electro 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Electro 12", no_esta: 0.03, cuotas: 12, electro: 0.05, pequeno: 0.05, motos: "No Tiene" },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Electro 15", no_esta: 0.05, cuotas: 15, electro: 0.06, pequeno: 0.06, motos: "No Tiene" },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Electro 18", no_esta: 0.07, cuotas: 18, electro: 0.07, pequeno: 0.07, motos: "No Tiene" },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Electro 20", no_esta: 0.09, cuotas: 20, electro: 0.09, pequeno: 0.09, motos: "No Tiene" },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Motos 12", no_esta: 0.05, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.07 },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Motos 15", no_esta: 0.06, cuotas: 15, electro: "No Tiene", pequeno: "No Tiene", motos: 0.08 },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Motos 18", no_esta: 0.09, cuotas: 18, electro: "No Tiene", pequeno: "No Tiene", motos: 0.09 },
+  { banco: "Nacion", termino: "Tarjeta de crédito - Nación Motos 20", no_esta: 0.11, cuotas: 20, electro: "No Tiene", pequeno: "No Tiene", motos: 0.11 },
+  { banco: "Frances", termino: "Tarjeta de crédito - Frances Electro 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Frances", termino: "Tarjeta de crédito - Frances Electro 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Frances", termino: "Tarjeta de crédito - Frances Electro 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Frances", termino: "Tarjeta de crédito - Frances Electro 12", no_esta: 0, cuotas: 12, electro: 0.03, pequeno: 0.03, motos: "No Tiene" },
+  { banco: "Frances", termino: "Tarjeta de crédito - Frances Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Frances", termino: "Tarjeta de crédito - Frances Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Frances", termino: "Tarjeta de crédito - Frances Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Frances", termino: "Tarjeta de crédito - Frances Motos 12", no_esta: 0, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.05 },
+  { banco: "Macro", termino: "Tarjeta de crédito - Macro Electro 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Macro", termino: "Tarjeta de crédito - Macro Electro 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Macro", termino: "Tarjeta de crédito - Macro Electro 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Macro", termino: "Tarjeta de crédito - Macro Electro 12", no_esta: 0, cuotas: 12, electro: 0.03, pequeno: 0.03, motos: "No Tiene" },
+  { banco: "Macro", termino: "Tarjeta de crédito - Macro Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Macro", termino: "Tarjeta de crédito - Macro Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Macro", termino: "Tarjeta de crédito - Macro Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Macro", termino: "Tarjeta de crédito - Macro Motos 12", no_esta: 0, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.05 },
+  { banco: "Hipotecario", termino: "Tarjeta de crédito - Hipotecario Electro 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Hipotecario", termino: "Tarjeta de crédito - Hipotecario Electro 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Hipotecario", termino: "Tarjeta de crédito - Hipotecario Electro 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Hipotecario", termino: "Tarjeta de crédito - Hipotecario Electro 12", no_esta: 0, cuotas: 12, electro: 0.05, pequeno: 0.05, motos: "No Tiene" },
+  { banco: "Hipotecario", termino: "Tarjeta de crédito - Hipotecario Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Hipotecario", termino: "Tarjeta de crédito - Hipotecario Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Hipotecario", termino: "Tarjeta de crédito - Hipotecario Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Hipotecario", termino: "Tarjeta de crédito - Hipotecario Motos 12", no_esta: 0, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.05 },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal 12", no_esta: 0.05, cuotas: 12, electro: 0.05, pequeno: 0.05, motos: "No Tiene" },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal 15", no_esta: 0.09, cuotas: 15, electro: 0.09, pequeno: 0.09, motos: "No Tiene" },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal 18", no_esta: 0.13, cuotas: 18, electro: 0.13, pequeno: 0.13, motos: "No Tiene" },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal Motos 12", no_esta: 0.05, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.07 },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal Motos 15", no_esta: 0.11, cuotas: 15, electro: "No Tiene", pequeno: "No Tiene", motos: 0.11 },
+  { banco: "Cabal", termino: "Tarjeta de crédito - Cabal Motos 18", no_esta: 0.15, cuotas: 18, electro: "No Tiene", pequeno: "No Tiene", motos: 0.15 },
+  { banco: "AMEX", termino: "Tarjeta de crédito - AMEX  3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "AMEX", termino: "Tarjeta de crédito - AMEX  6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "AMEX", termino: "Tarjeta de crédito - AMEX  9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "AMEX", termino: "Tarjeta de crédito - AMEX  12", no_esta: 0.03, cuotas: 12, electro: 0.05, pequeno: 0.05, motos: "No Tiene" },
+  { banco: "AMEX", termino: "Tarjeta de crédito - AMEX  Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "AMEX", termino: "Tarjeta de crédito - AMEX  Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "AMEX", termino: "Tarjeta de crédito - AMEX  Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "AMEX", termino: "Tarjeta de crédito - AMEX  Motos 12", no_esta: 0.05, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.07 },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Electro 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Electro 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Electro 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: null },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Electro 12", no_esta: 0.07, cuotas: 12, electro: 0.07, pequeno: 0.07, motos: "No Tiene" },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Electro 18", no_esta: 0.11, cuotas: 18, electro: 0.11, pequeno: 0.11, motos: "No Tiene" },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Motos 12", no_esta: 0.09, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.09 },
+  { banco: "Tuya", termino: "Tarjeta de crédito - Tuya Motos 18", no_esta: 0.13, cuotas: 18, electro: "No Tiene", pequeno: "No Tiene", motos: 0.13 },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol 12", no_esta: 0.05, cuotas: 12, electro: 0.05, pequeno: 0.05, motos: "No Tiene" },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol 14", no_esta: 0.09, cuotas: 14, electro: 0.09, pequeno: 0.09, motos: "No Tiene" },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol Motos 12", no_esta: 0.07, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.07 },
+  { banco: "Sol", termino: "Tarjeta de crédito - Sol Motos 14", no_esta: 0.11, cuotas: 14, electro: "No Tiene", pequeno: "No Tiene", motos: 0.11 },
+  { banco: "Naranja", termino: "Tarjeta de crédito - Naranja Electro 3", no_esta: 0, cuotas: 3, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Naranja", termino: "Tarjeta de crédito - Naranja Electro 6", no_esta: 0, cuotas: 6, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Naranja", termino: "Tarjeta de crédito - Naranja Electro 9", no_esta: 0, cuotas: 9, electro: 0, pequeno: 0, motos: "No Tiene" },
+  { banco: "Naranja", termino: "Tarjeta de crédito - Naranja Electro 12", no_esta: 0, cuotas: 12, electro: 0.03, pequeno: 0.03, motos: "No Tiene" },
+  { banco: "Naranja", termino: "Tarjeta de crédito - Naranja Motos 3", no_esta: 0, cuotas: 3, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Naranja", termino: "Tarjeta de crédito - Naranja Motos 6", no_esta: 0, cuotas: 6, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Naranja", termino: "Tarjeta de crédito - Naranja Motos 9", no_esta: 0, cuotas: 9, electro: "No Tiene", pequeno: "No Tiene", motos: 0 },
+  { banco: "Naranja", termino: "Tarjeta de crédito - Naranja Motos 12", no_esta: 0.03, cuotas: 12, electro: "No Tiene", pequeno: "No Tiene", motos: 0.05 },
+  { banco: "NoBancarizada", termino: "Tarjeta de crédito - No Bancarizada  3", no_esta: 0.13, cuotas: 3, electro: 0.13, pequeno: 0.13, motos: 0.13 },
+  { banco: "NoBancarizada", termino: "Tarjeta de crédito - No Bancarizada  6", no_esta: 0.25, cuotas: 6, electro: 0.25, pequeno: 0.25, motos: 0.25 },
+  { banco: "NoBancarizada", termino: "Tarjeta de crédito - No Bancarizada  9", no_esta: 0.4, cuotas: 9, electro: 0.4, pequeno: 0.4, motos: 0.4 },
+  { banco: "NoBancarizada", termino: "Tarjeta de crédito - No Bancarizada  12", no_esta: 0.53, cuotas: 12, electro: 0.53, pequeno: 0.53, motos: 0.53 },
+];
+
+const state = {
+  productos: new Map(),
+  productosList: [],
+  recargos: RECARGOS_DATA,
+  currentFilteredPlans: [],
+  selectedPlanIdx: null,
+  simulatedDay: null,
+  ofertas: null,
+  ofertasCargado: false,
+  ofertasFileName: null,
+  ofertasUltimaActualizacion: null,
+  ofertasCount: 0
+};
+
+const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+// Sin promociones puntuales vigentes — condiciones base de Octubre 2026 (ver documento oficial).
+
+// EXCEL OFERTAS
+function parseExcelDate(v){
+  if(!v) return null;
+  if(v instanceof Date) return v;
+  if(typeof v === 'number'){
+    const d = XLSX.SSF.parse_date_code(v);
+    if(!d) return null;
+    return new Date(d.y, d.m - 1, d.d);
+  }
+  const parsed = new Date(v);
+  return isNaN(parsed) ? null : parsed;
+}
+
+function finDelDia(d){
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59);
+}
+
+function cargarOfertasDesdeArchivo(file){
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    try{
+      const data = new Uint8Array(evt.target.result);
+      const wb = XLSX.read(data, { type: 'array', cellDates: true });
+      const sheetName = wb.SheetNames.find(n => n.trim().toLowerCase() === 'ofertas') || wb.SheetNames[0];
+      const sheet = wb.Sheets[sheetName];
+      const rawRows = XLSX.utils.sheet_to_json(sheet, { defval: null });
+
+      const rows = rawRows.map(rawRow => {
+        const r = {};
+        Object.keys(rawRow).forEach(k => { r[k.trim()] = rawRow[k]; });
+        return r;
+      });
+
+      const nuevoMap = new Map();
+      let cargados = 0;
+      rows.forEach(r => {
+        const code = String(r['Columna2'] ?? r['CodItem'] ?? r['SKU'] ?? r['Codigo'] ?? r['Código'] ?? '').trim().toUpperCase();
+        if(!code) return;
+        nuevoMap.set(code, {
+          desde: parseExcelDate(r['Desde']),
+          hasta: parseExcelDate(r['Hasta']),
+          familia: r['Familia'] || null,
+          categoria: r['Categoria'] || null,
+          descripcion: r['Columna3'] || r['Descripcion'] || '',
+          estado: String(r['Columna1'] ?? '').trim()
+        });
+        cargados++;
+      });
+
+      if(cargados === 0){
+        alert('⚠️ No se encontraron filas reconocibles en el archivo.\nVerificá que sea el Excel de Ofertas de la intranet.');
+        return;
+      }
+
+      state.ofertas = nuevoMap;
+      state.ofertasCargado = true;
+      state.ofertasFileName = file.name;
+      state.ofertasUltimaActualizacion = new Date();
+      state.ofertasCount = cargados;
+
+      renderOfertasStatus();
+      renderAuthorizedPlans();
+    }catch(err){
+      alert('⚠️ No se pudo leer el archivo.\n' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function getOfertaInfo(code){
+  if(!state.ofertas) return null;
+  const info = state.ofertas.get(code);
+  if(!info) return { existe: false, vigenteHoy: false };
+  const now = new Date();
+  const desdeOk = !info.desde || now >= info.desde;
+  const hastaOk = !info.hasta || now <= finDelDia(info.hasta);
+  const vigenteHoy = info.estado === 'Vigente' && desdeOk && hastaOk;
+  return { existe: true, vigenteHoy, ...info };
+}
+
+function renderOfertasStatus(){
+  let html;
+  if(!state.ofertasCargado){
+    html = `Sin archivo cargado en esta sesión — adjuntá el Excel de intranet para identificar OFERTA / NO OFERTA y calcular los descuentos contado.`;
+  } else {
+    const f = state.ofertasUltimaActualizacion;
+    const fechaTxt = f.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit', year:'numeric'});
+    const horaTxt = f.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+    html = `<b style="color:var(--pequeno);">${state.ofertasFileName}</b> · ${state.ofertasCount} códigos · Última actualización: <b>${fechaTxt} ${horaTxt} hs</b>`;
+  }
+  const box1 = document.getElementById('ofertas-status');
+  const box2 = document.getElementById('ofertas-status-promos');
+  if(box1) box1.innerHTML = html;
+  if(box2) box2.innerHTML = html;
+}
+
+function getCurrentDayIndex(){
+  if(state.simulatedDay !== null) return state.simulatedDay;
+  return new Date().getDay();
+}
+
+function updateHeaderDate(){
+  const now = new Date();
+  const dayIdx = getCurrentDayIndex();
+  const isThu = dayIdx === 4;
+  const dayName = DAY_NAMES[dayIdx];
+  const dateStr = now.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit'});
+
+  document.getElementById('header-today-txt').innerHTML = `${dayName} ${dateStr}`;
+
+  const hipoAlert = document.getElementById('hipo-live-alert');
+  if(isThu){
+    hipoAlert.style.background = "rgba(37,211,102,.12)";
+    hipoAlert.style.borderColor = "rgba(37,211,102,.35)";
+    hipoAlert.style.color = "#4EFA8A";
+    hipoAlert.innerHTML = `🎉 <b>¡HOY ES JUEVES — PROMO HIPOTECARIO HABILITADA!</b><br>
+    Las 12 cuotas de Banco Hipotecario están activas sin recargo. Además, rigen 9 CSI todos los días para todo el catálogo (condición base).`;
+  } else {
+    hipoAlert.style.background = "rgba(239,127,19,.12)";
+    hipoAlert.style.borderColor = "rgba(239,127,19,.35)";
+    hipoAlert.style.color = "var(--orange-hi)";
+    hipoAlert.innerHTML = `⚡ <b>BANCO HIPOTECARIO: 9 CSI HABILITADO HOY (${dayName.toUpperCase()})</b><br>
+    El plan de 9 cuotas sin interés está disponible para todo el catálogo comercial (condición base). El plan de 12 cuotas rige exclusivamente los días Jueves.`;
+  }
+
+  renderNovedadesAlert();
+}
+
+function renderNovedadesAlert(){
+  const box = document.getElementById('novedades-live-alert');
+  if(!box) return;
+
+  box.innerHTML = `
+    <div style="background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:12px; color:var(--ink-soft);">
+      ℹ️ Sin promociones puntuales vigentes. Rigen las condiciones comerciales base de Octubre 2026 — revisá la pestaña <b>📢 Promociones Vigentes</b>.
+    </div>`;
+}
+
+function setSimDay(day){
+  state.simulatedDay = day;
+  document.getElementById('btn-day-real').classList.toggle('active', day === null);
+  document.getElementById('btn-day-thu').classList.toggle('active', day === 4);
+  
+  const statusLbl = document.getElementById('sim-status-label');
+  if(day === 4){
+    statusLbl.innerHTML = `⚡ <b>Simulando Jueves (12 Cuotas Hipotecario Habilitadas)</b>`;
+  } else {
+    statusLbl.innerHTML = `Día real detectado`;
+  }
+
+  updateHeaderDate();
+  renderOfertasStatus();
+  renderAuthorizedPlans();
+}
+
+// INICIALIZACIÓN
+PRODUCTOS_DATA.forEach(([codigo, grupo]) => {
+  state.productos.set(codigo.toUpperCase(), grupo);
+  state.productosList.push({ codigo, grupo });
+});
+
+// UPLOADER
+document.getElementById('in-ofertas-file').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  cargarOfertasDesdeArchivo(file);
+  e.target.value = '';
+});
+renderOfertasStatus();
+
+function openTab(tabId){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`button[onclick="openTab('${tabId}')"]`).classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// BUSCADOR CATÁLOGO
+const catTbody = document.getElementById('cat-tbody');
+function renderCatalog(list){
+  catTbody.innerHTML = list.map(p => `
+    <tr>
+      <td><b>${p.codigo}</b></td>
+      <td><span class="badge ${p.grupo}">${p.grupo}</span></td>
+      <td><span class="pill-csi">Mailing Activo</span></td>
+    </tr>
+  `).join('');
+}
+renderCatalog(state.productosList);
+
+document.getElementById('cat-search').addEventListener('input', function(e){
+  const q = e.target.value.trim().toUpperCase();
+  renderCatalog(state.productosList.filter(p => p.codigo.includes(q)));
+});
+
+// AUTOCOMPLETE
+const inCodigo = document.getElementById('in-codigo');
+const acList = document.getElementById('ac-list');
+const inPrecio = document.getElementById('in-precio');
+
+inCodigo.addEventListener('input', function(){
+  const q = inCodigo.value.trim().toUpperCase();
+  if(!q){ 
+    acList.classList.remove('show'); 
+    renderAuthorizedPlans();
+    return; 
+  }
+  const matches = state.productosList.filter(p => p.codigo.toUpperCase().includes(q)).slice(0,6);
+  if(!matches.length) {
+    acList.classList.remove('show');
+  } else {
+    acList.innerHTML = matches.map(p => `
+      <div class="ac-item" data-code="${p.codigo}">
+        <span>${p.codigo}</span>
+        <span class="badge ${p.grupo}">${p.grupo}</span>
+      </div>
+    `).join('');
+    acList.classList.add('show');
+  }
+  renderAuthorizedPlans();
+});
+
+acList.addEventListener('click', function(e){
+  const item = e.target.closest('.ac-item');
+  if(!item) return;
+  inCodigo.value = item.dataset.code;
+  acList.classList.remove('show');
+  if(document.activeElement) document.activeElement.blur();
+  renderAuthorizedPlans();
+});
+
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.autocomplete')) acList.classList.remove('show');
+});
+
+// CALCULO Y RENDER DE PLANES
+function renderAuthorizedPlans(){
+  const code = inCodigo.value.trim().toUpperCase();
+  const bankFilter = document.getElementById('in-banco-filter').value;
+  const grid = document.getElementById('plans-grid');
+  const summaryBox = document.getElementById('quote-summary');
+  const readoutBar = document.getElementById('readout-status');
+  const readoutCount = document.getElementById('readout-count');
+  const contadoBox = document.getElementById('contado-discount-box');
+  const contadoTxt = document.getElementById('contado-discount-txt');
+
+  summaryBox.style.display = 'none';
+  contadoBox.style.display = 'none';
+  document.getElementById('match-price-box').style.display = 'none';
+  state.selectedPlanIdx = null;
+
+  if(!code){
+    readoutBar.innerHTML = `<span class="badge na">Sin artículo</span> Ingresá un código para ver cuotas autorizadas`;
+    readoutCount.innerHTML = '';
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--ink-dim); font-family:'IBM Plex Mono',monospace; font-size:12.5px;">Ingresá un SKU arriba para cargar las cuotas habilitadas.</div>`;
+    return;
+  }
+
+  const grupo = state.productos.get(code);
+  let catName = grupo;
+  let badgeCls = grupo;
+
+  if(!grupo){
+    const esMoto = code.startsWith('MO');
+    catName = esMoto ? "Motos (No Mailing)" : "Electro/General (No Mailing)";
+    badgeCls = esMoto ? "Motos" : "na";
+  }
+
+  // Familia usada para evaluar el alcance de Electro Fans (los SKU fuera de mailing se tratan como Electro o Motos)
+  const familiaEfectiva = grupo || (code.startsWith('MO') ? "Motos" : "Electro");
+
+  // ESTADO DE OFERTA
+  const oInfo = state.ofertasCargado ? getOfertaInfo(code) : null;
+  const esEnOferta = oInfo ? oInfo.vigenteHoy : false;
+  const esNoOferta = oInfo ? !oInfo.vigenteHoy : true;
+  
+  // DETECCIÓN STARLINK Y AIRES ACONDICIONADOS
+  const descCompleta = `${oInfo?.familia || ''} ${oInfo?.categoria || ''} ${oInfo?.descripcion || ''}`.toLowerCase();
+  const esStarlink = /starlink|antena/i.test(descCompleta) || code.startsWith('ST');
+  const esAireAcondicionado = code.startsWith('AA') || /aire|split|acondicionador/i.test(descCompleta);
+  const esVentilador = /ventilador/i.test(descCompleta);
+  const esClimatizacion = esAireAcondicionado || esVentilador;
+
+  let ofertaBadgeHtml;
+  if(!state.ofertasCargado){
+    ofertaBadgeHtml = `<span class="pill-recargo" title="Subí el Excel para verificar si está en oferta">📁 Base estándar (sin Excel)</span>`;
+  } else if(esStarlink){
+    ofertaBadgeHtml = `<span class="pill-alert">📡 Antena Starlink (Excluida de Promos)</span>`;
+  } else if(esEnOferta){
+    ofertaBadgeHtml = `<span class="pill-recargo" style="background:rgba(94,179,232,.15); color:var(--electro);">💠 EN OFERTA</span>`;
+  } else {
+    ofertaBadgeHtml = `<span class="pill-csi">🏷️ NO OFERTA</span>`;
+  }
+
+  readoutBar.innerHTML = `<span class="badge ${badgeCls}">${catName}</span> <span style="font-size:12px; color:var(--ink-soft);">SKU: <b>${code}</b></span> ${ofertaBadgeHtml}`;
+
+  const precioInput = parseFloat(inPrecio.value);
+  const precio = (!isNaN(precioInput) && precioInput > 0) ? precioInput : 100000;
+
+  // CÁLCULO DE DESCUENTOS CONTADO — condición base vigente (documento oficial Octubre 2026, nivel Gerente)
+  const esMotoSku = familiaEfectiva === "Motos";
+  contadoBox.style.display = 'flex';
+  if(esStarlink){
+    contadoTxt.innerHTML = `⚠️ <b>Starlink:</b> medios de pago según condiciones propias del Kit (ver Promociones).`;
+  } else if(esMotoSku){
+    contadoTxt.innerHTML = `ℹ️ <b>Moto:</b> descuento base Motos (Gerente) 15% Multimarca/Honda-Yamaha-Bajaj, 22% Kymco, 15% Accesorios, 12% en +310cc no publicadas — no se calcula acá, ver pestaña Promociones.`;
+  } else if(esEnOferta){
+    const precioConDto = precio * 0.88;
+    contadoTxt.innerHTML = `💵 <b>Descuento base (Efectivo/Débito, Gerente):</b> <b>12% OFF</b> en productos en Oferta → <b>$${precioConDto.toLocaleString('es-AR', {minimumFractionDigits:2})}</b>`;
+  } else if(esClimatizacion){
+    const precioConDto = precio * 0.80;
+    contadoTxt.innerHTML = `💵 <b>Descuento base Climatización (Efectivo/Débito, Gerente):</b> <b>20% OFF</b> (salvo Aires >8000W, que quedan al 7%) → <b>$${precioConDto.toLocaleString('es-AR', {minimumFractionDigits:2})}</b>`;
+  } else {
+    contadoTxt.innerHTML = `ℹ️ <b>Descuento base No Publicado (Gerente):</b> 17% Electro/Celulares o 20% Muebles-Colchones-Línea Negra, según categoría del producto (el cotizador no distingue la categoría automáticamente) — ver detalle en la pestaña Promociones.`;
+  }
+  const dayIdx = getCurrentDayIndex();
+  const isThursday = dayIdx === 4;
+  const currentDayName = DAY_NAMES[dayIdx];
+
+  state.currentFilteredPlans = [];
+
+  state.recargos.forEach((r) => {
+    if(bankFilter !== "ALL" && r.banco !== bankFilter) return;
+
+    let recargoVal = 0;
+    if(!grupo){
+      const esMoto = code.startsWith('MO');
+      const planEsMoto = r.termino.toLowerCase().includes('motos');
+      if(esMoto && !planEsMoto) return;
+      if(!esMoto && planEsMoto) return;
+      recargoVal = r.no_esta;
+    } else if(grupo === "Electro"){
+      recargoVal = r.electro;
+    } else if(grupo === "Pequeño"){
+      recargoVal = r.pequeno;
+    } else if(grupo === "Motos"){
+      recargoVal = r.motos;
+    }
+
+    if(recargoVal === "No Tiene" || recargoVal === "no tiene") return;
+
+    // BLOQUEOS REGLAMENTARIOS
+    const esHipotecario12 = (r.banco === "Hipotecario" && r.cuotas === 12);
+    const isBlocked = esHipotecario12 && !isThursday;
+
+    let blockReason = null;
+    if(esHipotecario12 && !isThursday) blockReason = `Solo Jueves (Hoy es ${currentDayName})`;
+
+    state.currentFilteredPlans.push({
+      banco: r.banco,
+      termino: r.termino,
+      cuotas: r.cuotas,
+      recargo: parseFloat(recargoVal) || 0,
+      isBlocked: isBlocked,
+      blockReason: blockReason
+    });
+  });
+
+  readoutCount.innerHTML = `✓ ${state.currentFilteredPlans.length} planes evaluados`;
+
+  if(state.currentFilteredPlans.length === 0){
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:#FFA8A8; font-size:13px;">No hay planes de ${bankFilter} habilitados para artículos de ${catName}.</div>`;
+    return;
+  }
+
+  grid.innerHTML = state.currentFilteredPlans.map((p, idx) => {
+    const precioFinal = precio * (1 + p.recargo);
+    const cuotaVal = precioFinal / p.cuotas;
+    const isZero = p.recargo === 0 && !p.isBlocked;
+    const tasaTxt = isZero ? '0% Interés' : `+${(p.recargo*100).toFixed(0)}% recargo`;
+
+    if(p.isBlocked){
+      const alertMsg = `⛔ PLAN NO HABILITADO HOY:\\nEl plan de 12 cuotas de Banco Hipotecario rige EXCLUSIVAMENTE LOS DÍAS JUEVES.\\nHoy es ${currentDayName}.`;
+      return `
+        <div class="plan-card is-blocked" onclick="alert('${alertMsg}')">
+          <div class="plan-cuotas">${p.cuotas} cuotas</div>
+          <div class="plan-val-cuota">NO DISPONIBLE</div>
+          <div class="plan-bank-name">${p.termino.replace('Tarjeta de crédito - ', '')}</div>
+          <div class="plan-total-txt" style="color:var(--danger);">${p.blockReason}</div>
+        </div>
+      `;
+    }
+
+    const badgeExtra = '';
+
+    return `
+      <div class="plan-card ${isZero ? 'is-zero' : ''}" onclick="selectPlan(${idx})">
+        <div class="plan-cuotas">${p.cuotas} cuotas</div>
+        <div class="plan-val-cuota">$${cuotaVal.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+        <div class="plan-bank-name">${p.termino.replace('Tarjeta de crédito - ', '')}</div>
+        <div class="plan-total-txt">Total: $${precioFinal.toLocaleString('es-AR', {minimumFractionDigits:0})} (${tasaTxt})</div>
+        ${badgeExtra}
+      </div>
+    `;
+  }).join('');
+}
+
+// SELECCIÓN Y COTIZACIÓN
+function selectPlan(idx){
+  const p = state.currentFilteredPlans[idx];
+  if(p.isBlocked) return;
+
+  document.querySelectorAll('.plan-card').forEach((c, i) => {
+    c.classList.toggle('selected', i === idx);
+  });
+
+  state.selectedPlanIdx = idx;
+  const code = inCodigo.value.trim().toUpperCase();
+  const grupo = state.productos.get(code) || "No Mailing";
+
+  const precioInput = parseFloat(inPrecio.value);
+  const precio = (!isNaN(precioInput) && precioInput > 0) ? precioInput : 100000;
+  const precioFinal = precio * (1 + p.recargo);
+  const cuotaVal = precioFinal / p.cuotas;
+
+  const summary = document.getElementById('quote-summary');
+  summary.style.display = 'grid';
+
+  document.getElementById('quote-bank-title').innerText = p.termino;
+  document.getElementById('quote-cuota-val').innerText = `$${cuotaVal.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+  
+  const recTxt = p.recargo === 0 ? '<span class="badge zero">¡0% SIN INTERÉS!</span>' : `Recargo total: <b>${(p.recargo*100).toFixed(1)}%</b>`;
+  document.getElementById('quote-detail-txt').innerHTML = `
+    ${p.cuotas} cuotas fijas · ${recTxt}<br>
+    Precio lista/contado: <b>$${precio.toLocaleString('es-AR', {minimumFractionDigits:2})}</b> · Total financiado: <b>$${precioFinal.toLocaleString('es-AR', {minimumFractionDigits:2})}</b>
+  `;
+
+  // IGUALAR PRECIO DE CONTADO (autorización web): descuento necesario para que,
+  // tras cargarse el recargo del plan, el total financiado quede igual al precio de contado.
+  // Descuento = recargo / (1 + recargo). Tope autorizable en sucursal: 20%.
+  const matchBox = document.getElementById('match-price-box');
+  const matchTxt = document.getElementById('match-price-txt');
+  if(p.recargo === 0){
+    matchBox.style.display = 'block';
+    matchTxt.innerHTML = `Este plan ya es <b>0% de interés</b>: el total financiado ya coincide con el precio de contado, no hace falta aplicar ningún descuento.`;
+  } else {
+    const r = p.recargo;
+    const dto = r / (1 + r);
+    const montoDto = precio * dto;
+    const precioConDto = precio - montoDto;
+    const cuotaIgualada = precio / p.cuotas;
+    const autorizable = dto <= 0.20;
+    const badge = autorizable
+      ? `<span class="pill-csi">✅ Dentro del 20% máximo — se puede pedir autorización</span>`
+      : `<span class="pill-alert">⚠️ Supera el 20% máximo permitido en sucursal</span>`;
+    matchTxt.innerHTML = `
+      Para que, con el <b>${(r*100).toFixed(1)}%</b> de recargo de este plan, el total financiado quede igual al precio de contado:<br>
+      Descuento a aplicar: <b style="color:var(--ink); font-size:14px;">${(dto*100).toFixed(2)}%</b> → <b>$${montoDto.toLocaleString('es-AR',{minimumFractionDigits:2, maximumFractionDigits:2})}</b><br>
+      Precio a cargar antes del recargo: <b>$${precioConDto.toLocaleString('es-AR',{minimumFractionDigits:2, maximumFractionDigits:2})}</b><br>
+      Cuota resultante (${p.cuotas} cuotas): <b>$${cuotaIgualada.toLocaleString('es-AR',{minimumFractionDigits:2, maximumFractionDigits:2})}</b><br>
+      ${badge}
+    `;
+    matchBox.style.display = 'block';
+  }
+
+  state.lastQuote = {
+    sku: code,
+    grupo: grupo,
+    plan: p.termino,
+    cuotas: p.cuotas,
+    cuotaVal: cuotaVal.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2}),
+    precioContado: precio.toLocaleString('es-AR', {minimumFractionDigits:2}),
+    precioFinal: precioFinal.toLocaleString('es-AR', {minimumFractionDigits:2}),
+    recargo: (p.recargo * 100).toFixed(0)
+  };
+}
+
+inPrecio.addEventListener('input', renderAuthorizedPlans);
+
+// WHATSAPP
+function buildQuoteText() {
+  if(!state.lastQuote) return '';
+  const q = state.lastQuote;
+  const promoTag = q.recargo === '0' ? '🎉 *¡0% SIN INTERÉS!*' : `📈 *Recargo:* ${q.recargo}%`;
+
+  return `¡Hola! Te comparto el detalle de la cotización en *Cetrogar*:\n\n` +
+         `📦 *Artículo:* ${q.sku} (${q.grupo})\n` +
+         `💳 *Plan:* ${q.plan}\n` +
+         `${promoTag}\n\n` +
+         `🔹 *Financiación:* ${q.cuotas} cuotas fijas de *$${q.cuotaVal}*\n` +
+         `🔹 *Total financiado:* $${q.precioFinal}\n` +
+         `🔹 *Precio de contado:* $${q.precioContado}\n\n` +
+         `📍 _Cotización generada en Cetrogar — condiciones vigentes al ${new Date().toLocaleDateString('es-AR')}._`;
+}
+
+document.getElementById('btn-wa').addEventListener('click', function(e){
+  e.preventDefault();
+  const text = encodeURIComponent(buildQuoteText());
+  const url = `https://api.whatsapp.com/send?text=${text}`;
+  window.location.href = url;
+});
+
+// COPIAR PORTAPAPELES COMPATIBLE IOS / ANDROID
+document.getElementById('btn-copy').addEventListener('click', async function(e){
+  e.preventDefault();
+  const text = buildQuoteText();
+  let ok = false;
+
+  if(navigator.clipboard && window.isSecureContext){
+    try { 
+      await navigator.clipboard.writeText(text); 
+      ok = true; 
+    } catch(err){}
+  }
+
+  if(!ok){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '0';
+    ta.style.width = '2em';
+    ta.style.height = '2em';
+    ta.style.padding = '0';
+    ta.style.border = 'none';
+    ta.style.outline = 'none';
+    ta.style.boxShadow = 'none';
+    ta.style.background = 'transparent';
+    ta.contentEditable = 'true';
+    ta.readOnly = false;
+    document.body.appendChild(ta);
+    
+    const range = document.createRange();
+    range.selectNodeContents(ta);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    ta.setSelectionRange(0, 999999);
+
+    try{
+      document.execCommand('copy');
+      ok = true;
+    }catch(err){}
+    
+    document.body.removeChild(ta);
+  }
+
+  showToast();
+});
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// INICIAR FECHA AL CARGAR
+updateHeaderDate();
+</script>
+</body>
+</html>
